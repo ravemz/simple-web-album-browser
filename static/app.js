@@ -18,14 +18,41 @@
 
   // ----- Lightbox -----
   const lightboxFilename = document.getElementById('lightbox-filename');
+  const lightboxPrev = document.querySelector('.lightbox-prev');
+  const lightboxNext = document.querySelector('.lightbox-next');
 
-  function openLightbox(src, path) {
-    if (!lightbox || !lightboxImg) return;
+  var lightboxImages = [];
+  var lightboxIndex = 0;
+
+  function setLightboxImage(index) {
+    if (!lightboxImages.length) return;
+    var n = lightboxImages.length;
+    lightboxIndex = ((index % n) + n) % n;
+    var item = lightboxImages[lightboxIndex];
+    var src = '/view?album=' + encodeURIComponent(item.album) + '&path=' + encodeURIComponent(item.path);
     lightboxImg.src = src;
     if (lightboxFilename) {
-      var name = path ? path.replace(/^.*[/\\]/, '') : '';
-      lightboxFilename.textContent = name;
+      lightboxFilename.textContent = item.path.replace(/^.*[/\\]/, '');
     }
+  }
+
+  function openLightbox(src, path, album) {
+    if (!lightbox || !lightboxImg) return;
+    var cards = document.querySelectorAll('.card');
+    lightboxImages = [];
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      lightboxImages.push({ path: c.dataset.path, album: c.dataset.album });
+    }
+    lightboxIndex = 0;
+    for (var j = 0; j < lightboxImages.length; j++) {
+      if (lightboxImages[j].path === path) {
+        lightboxIndex = j;
+        break;
+      }
+    }
+    setLightboxImage(lightboxIndex);
+    lightbox.classList.toggle('lightbox-single', lightboxImages.length <= 1);
     lightbox.hidden = false;
     document.body.style.overflow = 'hidden';
   }
@@ -35,11 +62,24 @@
     lightbox.hidden = true;
     lightboxImg.src = '';
     if (lightboxFilename) lightboxFilename.textContent = '';
+    lightboxImages = [];
     document.body.style.overflow = '';
+  }
+
+  function goPrev() {
+    if (lightboxImages.length <= 1) return;
+    setLightboxImage(lightboxIndex - 1);
+  }
+
+  function goNext() {
+    if (lightboxImages.length <= 1) return;
+    setLightboxImage(lightboxIndex + 1);
   }
 
   if (lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeLightbox);
   if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+  if (lightboxPrev) lightboxPrev.addEventListener('click', function (e) { e.stopPropagation(); goPrev(); });
+  if (lightboxNext) lightboxNext.addEventListener('click', function (e) { e.stopPropagation(); goNext(); });
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
@@ -47,6 +87,16 @@
         confirmDialog.hidden = true;
       } else {
         closeLightbox();
+      }
+      return;
+    }
+    if (lightbox && !lightbox.hidden) {
+      if (e.key === 'ArrowLeft') {
+        goPrev();
+        e.preventDefault();
+      } else if (e.key === 'ArrowRight') {
+        goNext();
+        e.preventDefault();
       }
     }
   });
@@ -62,7 +112,7 @@
     const album = card.dataset.album;
     if (!path || !album) return;
     const src = '/view?album=' + encodeURIComponent(album) + '&path=' + encodeURIComponent(path);
-    openLightbox(src, path);
+    openLightbox(src, path, album);
   });
 
   // ----- Confirm dialog (promise-based) -----
