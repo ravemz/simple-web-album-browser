@@ -20,6 +20,7 @@
   const lightboxFilename = document.getElementById('lightbox-filename');
   const lightboxPrev = document.querySelector('.lightbox-prev');
   const lightboxNext = document.querySelector('.lightbox-next');
+  const lightboxFavBtn = document.getElementById('lightbox-fav-btn');
 
   var lightboxImages = [];
   var lightboxIndex = 0;
@@ -33,6 +34,9 @@
     lightboxImg.src = src;
     if (lightboxFilename) {
       lightboxFilename.textContent = item.path.replace(/^.*[/\\]/, '');
+    }
+    if (lightboxFavBtn) {
+      lightboxFavBtn.hidden = item.album !== 'recent';
     }
   }
 
@@ -80,6 +84,40 @@
   if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
   if (lightboxPrev) lightboxPrev.addEventListener('click', function (e) { e.stopPropagation(); goPrev(); });
   if (lightboxNext) lightboxNext.addEventListener('click', function (e) { e.stopPropagation(); goNext(); });
+
+  if (lightboxFavBtn) {
+    lightboxFavBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (!lightboxImages.length) return;
+      var item = lightboxImages[lightboxIndex];
+      if (item.album !== 'recent') return;
+      fetch('/fav', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'path=' + encodeURIComponent(item.path)
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.ok) {
+            var path = item.path;
+            lightboxImages.splice(lightboxIndex, 1);
+            document.querySelectorAll('.card').forEach(function (card) {
+              if (card.dataset.path === path) card.remove();
+            });
+            if (lightboxImages.length === 0) {
+              closeLightbox();
+            } else {
+              if (lightboxIndex >= lightboxImages.length) lightboxIndex = lightboxImages.length - 1;
+              lightbox.classList.toggle('lightbox-single', lightboxImages.length <= 1);
+              setLightboxImage(lightboxIndex);
+            }
+          } else {
+            alert(data.error || 'Failed to add to favorites');
+          }
+        })
+        .catch(function () { alert('Failed to add to favorites'); });
+    });
+  }
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {

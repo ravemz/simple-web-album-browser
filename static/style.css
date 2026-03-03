@@ -376,10 +376,39 @@ body {
   border-radius: 4px;
 }
 
-.lightbox-close {
+.lightbox-top-actions {
   position: absolute;
   top: -2.5rem;
   right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lightbox-fav {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: rgba(60, 120, 60, 0.9);
+  color: #ffd700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.lightbox-fav:hover {
+  background: #3a783a;
+}
+
+.lightbox-fav svg {
+  display: block;
+}
+
+.lightbox-close {
   width: 2rem;
   height: 2rem;
   padding: 0;
