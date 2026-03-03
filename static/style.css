@@ -1,0 +1,411 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Header & tabs */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #252525;
+  border-bottom: 1px solid #333;
+  padding: 0.75rem 1rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  color: #aaa;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tab:hover {
+  color: #e0e0e0;
+  background: #333;
+}
+
+.tab.active {
+  color: #fff;
+  background: #444;
+  font-weight: 600;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.select-all-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.select-all {
+  width: 1.1rem;
+  height: 1.1rem;
+  cursor: pointer;
+}
+
+.delete-selected {
+  padding: 0.4rem 0.75rem;
+}
+
+.delete-selected:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Main content */
+.main {
+  padding: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.empty {
+  text-align: center;
+  color: #888;
+  padding: 3rem 1rem;
+}
+
+.day-group {
+  margin-bottom: 2rem;
+}
+
+.day-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #999;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: 0.02em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+/* Card */
+.card {
+  position: relative;
+  background: #2a2a2a;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.card:has(.photo-checkbox:checked) {
+  border-color: #4a9eff;
+  box-shadow: 0 0 0 1px #4a9eff;
+}
+
+.card-checkbox {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 2;
+  margin: 0;
+  padding: 0.25rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.card:hover .card-checkbox,
+.card:focus-within .card-checkbox {
+  opacity: 1;
+}
+
+.card:has(.photo-checkbox:checked) .card-checkbox {
+  opacity: 1;
+}
+
+.card-checkbox input {
+  cursor: pointer;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.card-thumb-wrap {
+  aspect-ratio: 1;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #222;
+}
+
+.card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-thumb-wrap:focus {
+  outline: 2px solid #4a9eff;
+  outline-offset: 2px;
+}
+
+.card-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 2;
+}
+
+.card:hover .card-actions,
+.card:focus-within .card-actions {
+  opacity: 1;
+}
+
+.card:has(.photo-checkbox:checked) .card-actions {
+  opacity: 1;
+}
+
+/* Icon-only buttons on card */
+.btn-icon {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: transform 0.1s, background 0.15s;
+}
+
+.btn-icon:hover {
+  transform: scale(1.1);
+}
+
+.btn-icon.btn-delete {
+  background: rgba(180, 60, 60, 0.9);
+}
+
+.btn-icon.btn-delete:hover {
+  background: #b43c3c;
+}
+
+.btn-icon.btn-fav {
+  background: rgba(60, 120, 60, 0.9);
+  color: #ffd700;
+}
+
+.btn-icon.btn-fav:hover {
+  background: #3a783a;
+}
+
+.btn-icon svg {
+  display: block;
+}
+
+/* Buttons (toolbar, modal) */
+.btn {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  background: #444;
+  color: #e0e0e0;
+  transition: background 0.15s;
+}
+
+.btn:hover:not(:disabled) {
+  background: #555;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.btn-danger {
+  background: #8b2a2a;
+  color: #fff;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #a03333;
+}
+
+.btn-fav {
+  background: #3a5a2a;
+  color: #e8f0e0;
+}
+
+.btn-fav:hover:not(:disabled) {
+  background: #4a6a35;
+}
+
+/* Lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.lightbox[hidden] {
+  display: none;
+}
+
+.lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  cursor: pointer;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-filename {
+  margin: 0 0 0.5rem 0;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+  color: #aaa;
+  text-align: center;
+  word-break: break-all;
+  max-width: min(90vw, 600px);
+}
+
+.lightbox-content img {
+  max-width: 100%;
+  max-height: calc(100vh - 2rem);
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -2.5rem;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  background: #444;
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-close:hover {
+  background: #555;
+}
+
+/* Confirm modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+
+.modal-content {
+  position: relative;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 1.25rem;
+  max-width: 360px;
+  width: 100%;
+}
+
+.modal-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.modal-message {
+  margin: 0 0 1rem 0;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
