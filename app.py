@@ -61,9 +61,10 @@ def list_images(root: Path) -> list[tuple[str, float]]:
 
 
 def group_by_day(items: list[tuple[str, float]]) -> dict[str, list[str]]:
-    """Group relative paths by date string (YYYY-MM-DD). Newest day first."""
+    """Group relative paths by date string (YYYY-MM-DD). Newest day first, latest file first within each day."""
     from datetime import datetime
 
+    items = sorted(items, key=lambda x: x[1], reverse=True)  # latest mtime first
     by_day: dict[str, list[str]] = defaultdict(list)
     for rel, mtime in items:
         day = datetime.fromtimestamp(mtime).strftime("%Y-%m-%d")
